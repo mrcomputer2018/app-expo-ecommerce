@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, TextInput } from 'react-native';
 import { Feather } from '@expo/vector-icons';
@@ -9,7 +9,7 @@ export default function Product({navigation}: any) {
 
     const [ productsInCar, setProductsInCar ] = useState<IProduct[]>([]);
     const [search, setSearch] = useState('');
-    const [products, setProducts] = useState([
+    const [products, setProducts] = useState<IProduct[]>([
         {
             id: 101,
             nome: 'Tênis de Corrida Esportivo',
@@ -47,6 +47,16 @@ export default function Product({navigation}: any) {
             preco: 4999.00
           },
     ]);
+
+    const [filteredProducts, setFilteredProducts] = useState<IProduct[]>(products);
+
+    useEffect(() => {
+        setFilteredProducts(
+            products.filter((item) =>
+                item.nome.toLowerCase().includes(search.toLowerCase())
+            )
+        );
+    }, [search]);
 
     function handleAddToCar(item: IProduct) {
         setProductsInCar([...productsInCar, item]);
@@ -88,7 +98,7 @@ export default function Product({navigation}: any) {
             </View>
 
             <FlatList
-            data={products}
+            data={filteredProducts}
             keyExtractor={item => item.id.toString()}
             renderItem={({ item }) => (
                 <ListProducts item={item} handleAddToCar={handleAddToCar}/>

@@ -1,10 +1,14 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text, StyleSheet, FlatList, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, TextInput } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import { IProduct } from '../types/types';
 import ListProducts from '../components/ListProducts';
 
-export default function Product() {
+export default function Product({navigation}: any) {
 
+    const [ productsInCar, setProductsInCar ] = useState<IProduct[]>([]);
+    const [search, setSearch] = useState('');
     const [products, setProducts] = useState([
         {
             id: 101,
@@ -44,20 +48,50 @@ export default function Product() {
           },
     ]);
 
+    function handleAddToCar(item: IProduct) {
+        setProductsInCar([...productsInCar, item]);
+    }
+
+    function handleNavigateToCart() {
+        navigation.navigate('Carrinho', {productsInCar});
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar style="auto" />
 
             <View style= { styles.areaTitle }>
                 <Text  style= { styles.title }>Listagem de produtos</Text>
-                <Text>Vertodos</Text>
+
+                <TouchableOpacity onPress={handleNavigateToCart}>
+                    <Feather name="shopping-cart" size={24} color="black" />
+
+                    <View  style={ styles.areaCar }>
+                        <Text style={ styles.car }>
+                            {productsInCar.length}
+                        </Text>
+                    </View>
+                </TouchableOpacity>
+            </View>
+
+            <View style={{ 
+                paddingVertical: 10, 
+                alignItems: "center",
+                justifyContent: "center",
+            }}>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Procurando por...."
+                    onChangeText={setSearch}
+                    value={search}
+                />
             </View>
 
             <FlatList
             data={products}
             keyExtractor={item => item.id.toString()}
             renderItem={({ item }) => (
-                <ListProducts item={item} />
+                <ListProducts item={item} handleAddToCar={handleAddToCar}/>
             )}
             />
         </SafeAreaView>
@@ -70,7 +104,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#f5f5f5',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingBottom: 20,
+        padding: 20,
     },
     areaTitle: {
         flexDirection: 'row',
@@ -84,6 +118,34 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 16,
+        fontWeight: 'bold',
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+    },
+    input: {
+        height: 50,
+        width: 345,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 5,
+        paddingHorizontal: 10,
+        backgroundColor: '#fff',
+    },
+    areaCar: {
+        position: 'absolute',
+        top: 10,
+        left: 14,
+        fontSize: 14,
+        height: 24,
+        width: 24,
+        borderRadius: 12,
+        backgroundColor: 'red',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    car: {
+        color: '#fff',
+        textAlign: 'center',
         fontWeight: 'bold',
     },
 });

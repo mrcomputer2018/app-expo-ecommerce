@@ -1,7 +1,12 @@
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { IProduct } from '../types/types';
 
-export default function ListProducts({item} : {item: IProduct}) {
+type ListProductsProps = {
+    item: IProduct;
+    handleAddToCar: (item: IProduct) => void;
+}
+
+export default function ListProducts({item, handleAddToCar}: ListProductsProps) {
     return (
         <View style={ styles.container }>
             <Image 
@@ -17,7 +22,10 @@ export default function ListProducts({item} : {item: IProduct}) {
                 <Text style={ styles.price}>
                     R${(item.preco).toFixed(2)}
                 </Text>
-                <TouchableOpacity style={ styles.areaButton }>
+                <TouchableOpacity 
+                    style={ styles.areaButton }
+                    onPress={() => handleAddToCar(item)}
+                >
                     <Text style={ styles.textButton }>
                         Comprar
                     </Text>
